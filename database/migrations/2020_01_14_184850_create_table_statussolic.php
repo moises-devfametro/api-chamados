@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableCurso extends Migration
+class CreateTableStatussolic extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateTableCurso extends Migration
      */
     public function up()
     {
-        Schema::create('CURSO', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('nome', 100);
-            $table->unsignedBigInteger('tipocurso_id');
-
-            $table->foreign('tipocurso_id')->references('id')->on('TIPOCURSO');
+        Schema::create('STATUSSOLIC', function (Blueprint $table) {
+            $table->bigIncrements('ID');
+            $table->string('DESCRICAO', 45);
         });
     }
 
@@ -29,6 +26,6 @@ class CreateTableCurso extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('CURSO');
+        Schema::dropIfExists('STATUSSOLIC');
     }
 }

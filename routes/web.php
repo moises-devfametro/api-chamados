@@ -15,7 +15,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1/', 'middleware' => 'auth'], function () use ($router) {
+$router->group(['prefix' => 'api/v1/'], function () use ($router) {
     $router->get('chamados/aberto', 'ChamadoController@getAllAberto');
 
     $router->get('chamados/aberto/hoje', 'ChamadoController@getAllAbertoHoje');
@@ -25,6 +25,12 @@ $router->group(['prefix' => 'api/v1/', 'middleware' => 'auth'], function () use 
     $router->get('chamados/concluido/hoje', 'ChamadoController@getAllConcluidoHoje');
 
     $router->get('chamado/{id}', 'ChamadoController@get');
+
+    $router->get('cursos/graduacao', 'ChamadoController@getCursosGraduacao');
+
+    $router->get('cursos/posgraduacao', 'ChamadoController@getCursosPosGraduacao');
+
+    $router->post('aluno', 'ChamadoController@getAluno');
 
     $router->post('chamado/criar', 'ChamadoController@store');
 

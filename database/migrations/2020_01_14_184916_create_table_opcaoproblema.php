@@ -14,8 +14,8 @@ class CreateTableOpcaoproblema extends Migration
     public function up()
     {
         Schema::create('OPCAOPROBLEMA', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('descricao', 50);
+            $table->bigIncrements('ID');
+            $table->string('DESCRICAO', 50);
         });
     }
 
