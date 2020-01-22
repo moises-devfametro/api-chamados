@@ -15,7 +15,7 @@ class CreateTableSolicitacao extends Migration
     {
         Schema::create('SOLICITACAO', function (Blueprint $table) {
             $table->bigIncrements('ID');
-            $table->string('OBSERVACAO', 140);
+            $table->string('OBSERVACAO');
             $table->unsignedBigInteger('ALUNO_ID');
             $table->string('CONTATO', 45);
             $table->integer('OPCAO_WIFI')->nullable($value = true);

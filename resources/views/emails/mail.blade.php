@@ -10,7 +10,7 @@
     <table border="0" align="center" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
             <td align="center" style="padding: 0px 0 5px 0;">
-                <img src="https://diariodonordeste.verdesmares.com.br/polopoly_fs/1.2164672.1571687859!/image/image.png" style="max-width: 80%; display: block;" alt="Logo Unifametro">
+                <img src="http://www.unifametro.edu.br/cvtt/wp-content/uploads/2019/07/logo-unifametro-01.png" style="max-width: 80%; display: block;" alt="Logo Unifametro">
                 <hr>
             </td>
         </tr>
