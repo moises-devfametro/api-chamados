@@ -16,11 +16,12 @@ class CreateTableAlunosRm extends Migration
         Schema::create('ALUNOS_RM', function (Blueprint $table) {
             $table->bigIncrements('ID');
             $table->string('CPF');
-            $table->string('NOME');
+            $table->string('ALUNO');
             $table->string('EMAIL');
             $table->string('TELEFONE');
-            $table->dateTime('DTNASCIMENTO');
+            $table->string('NASCIMENTO');
             $table->string('RA');
+            $table->string('CURSO');
             $table->timestamps();
         });
     }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Chamado;
+use App\Solicitacao;
+use App\Alunos_rm;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ChamadoController extends Controller
 {
@@ -53,8 +55,24 @@ class ChamadoController extends Controller
         //     return response()->json($chamado);
     }
     public function store(Request $request){
-        $chamado = Chamado::create($request->all());
-        return response()->json($chamado, 201);
+        $chamado = Solicitacao::create($request->all());
+
+        $emailAluno = ($request->OPCAOCONTATO_ID == 2) ? $request->CONTATO : $request->EMAIL;
+        $nomeAluno = $request->ALUNO;
+        $dadosMail = [
+            'id' => $chamado['id'],
+            'NomeAluno' => $nomeAluno
+        ];
+        if($chamado):
+            Mail::send('emails.mail', $dadosMail, function ($message) use ($emailAluno, $nomeAluno) {
+                $message->to($emailAluno, $nomeAluno);
+                $message->from('sistemas@unifametro.edu.br','Unifametro');
+                $message->subject('Recebemos sua solicitação.');
+            });
+            return response()->json($chamado, 201);
+        else:
+            return false;
+        endif;
     }
     public function update($id, Request $request){
         $chamado = Chamado::findOrFail($id);
@@ -72,7 +90,37 @@ class ChamadoController extends Controller
     }
     public function getAluno(Request $request){
         $cpfAluno = $request->cpf;
-        $dadosAluno = DB::connection('RM')->select("SELECT * FROM ALUNOS_SIST_SOLICITACOES WHERE CPF = '{$cpfAluno}'");
-        return $dadosAluno;
+        $users = DB::table('ALUNOS_RM')
+                    ->select(DB::raw('ID, CPF, ALUNO, EMAIL, TELEFONE, NASCIMENTO, RA, CURSO'))
+                    ->where('CPF', '=', $cpfAluno)
+                    ->get();
+        if(is_null($users) || $users->count() == 0):
+            $dadosAluno = DB::connection('RM')->select("SELECT * FROM ALUNOS_SIST_SOLICITACOES WHERE CPF = '{$cpfAluno}'");
+            if(empty($dadosAluno)):
+                $obj = [];
+                return response()->json($obj);
+            else:
+                $aluno_rm = new Alunos_rm;
+                foreach ($dadosAluno as $dados) {
+                    $aluno_rm->CPF = $dados->CPF;
+                    $aluno_rm->ALUNO =  $dados->ALUNO;
+                    $aluno_rm->EMAIL = $dados->EMAIL;
+                    $aluno_rm->TELEFONE = $dados->TELEFONE;
+                    $aluno_rm->NASCIMENTO = $dados->NASCIMENTO;
+                    $aluno_rm->RA = $dados->RA;
+                    $aluno_rm->CURSO = $dados->CURSO;
+                }
+                $aluno_rm->save();
+                $DadosDeAluno = DB::table('ALUNOS_RM')
+                     ->select(DB::raw('ID, CPF, ALUNO, EMAIL, TELEFONE, NASCIMENTO, RA, CURSO'))
+                     ->where('CPF', '=', $cpfAluno)
+                     ->get();
+                return response()->json($DadosDeAluno);
+            endif;
+        else:
+            return response()->json($users, 200);
+        endif;
+
+
     }
 }

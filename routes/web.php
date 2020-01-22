@@ -32,7 +32,7 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
 
     $router->post('aluno', 'ChamadoController@getAluno');
 
-    $router->post('chamado/criar', 'ChamadoController@store');
+    $router->post('solicitacao/criar', 'ChamadoController@store');
 
     $router->put('chamado/atualizar/{id}', 'ChamadoController@update');
 });
