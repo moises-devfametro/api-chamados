@@ -12,51 +12,34 @@ use Illuminate\Support\Facades\Mail;
 class ChamadoController extends Controller
 {
 
-    public function __construct()
-    {
-        //
-    }
-    public function getAllAberto(){
-        return response()->json(Chamado::all());
-    }
     public function getAllAbertoHoje(){
         $chamado = DB::table('solicitacao AS SOLIC')
             ->join('OPCAOCONTATO AS OP', 'OP.ID', '=', 'SOLIC.OPCAOCONTATO_ID')
             ->join('ALUNOS_RM AS ALU', 'ALU.ID', '=', 'SOLIC.ALUNO_ID')
             ->join('STATUSSOLIC AS STATUS', 'STATUS.ID', '=', 'SOLIC.STATUSSOLIC_ID')
             ->whereDate('SOLIC.created_at', date('Y-m-d'))
+            ->select('SOLIC.ID AS ID', 'SOLIC.created_at AS DATA_ABERTURA', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'STATUS.DESCRICAO AS STATUS')
+            ->get();
+        return response()->json($chamado);
+    }
+    public function getChamadoStatus(Request $request){
+        $chamado = DB::table('solicitacao AS SOLIC')
+            ->join('OPCAOCONTATO AS OP', 'OP.ID', '=', 'SOLIC.OPCAOCONTATO_ID')
+            ->join('ALUNOS_RM AS ALU', 'ALU.ID', '=', 'SOLIC.ALUNO_ID')
+            ->join('STATUSSOLIC AS STATUS', 'STATUS.ID', '=', 'SOLIC.STATUSSOLIC_ID')
+            ->where('STATUS.DESCRICAO', '=', $request->get('status'))
             ->select('SOLIC.ID AS ID', 'SOLIC.created_at AS DATA_ABERTURA', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'STATUS.DESCRICAO')
             ->get();
         return response()->json($chamado);
+    }
 
-    }
-    public function getAllPendente(){
-        // $chamado = DB::table('solicitacao AS SOLIC')
-        //     ->join('status', 'SOLIC.status_id', '=', 'status.id')
-        //     ->join('aluno AS ALU', 'SOLIC.aluno_id', '=', 'ALU.id')
-        //     ->join('curso', 'curso.id', '=', 'ALU.curso_id')
-        //     ->where('status.descricao', '=', 'Pendente')
-        //     ->select('SOLIC.id', 'ALU.nome', 'ALU.cpf', 'curso.nome AS curso', 'SOLIC.contato', 'SOLIC.wifi_id', 'SOLIC.portal_id', 'SOLIC.email_id', 'SOLIC.observacao', 'status.descricao AS status', 'SOLIC.data AS created_at')
-        //     ->get();
-        // return response()->json($chamado);
-    }
-    public function getAllConcluidoHoje(){
-        // $chamado = DB::table('solicitacao AS SOLIC')
-        //     ->join('status', 'SOLIC.status_id', '=', 'status.id')
-        //     ->join('aluno AS ALU', 'SOLIC.aluno_id', '=', 'ALU.id')
-        //     ->join('curso', 'curso.id', '=', 'ALU.curso_id')
-        //     ->whereDate('encerramentochamado', date('Y-m-d'))
-        //     ->select('SOLIC.id', 'ALU.nome', 'ALU.cpf', 'curso.nome AS curso', 'SOLIC.contato', 'SOLIC.wifi_id', 'SOLIC.portal_id', 'SOLIC.email_id', 'SOLIC.observacao', 'status.descricao AS status')
-        //     ->get();
-        // return response()->json($chamado);
-    }
     public function get($id){
         $chamado = DB::table('solicitacao AS SOLIC')
             ->join('OPCAOCONTATO AS OP', 'OP.ID', '=', 'SOLIC.OPCAOCONTATO_ID')
             ->join('ALUNOS_RM AS ALU', 'ALU.ID', '=', 'SOLIC.ALUNO_ID')
             ->join('STATUSSOLIC AS STATUS', 'STATUS.ID', '=', 'SOLIC.STATUSSOLIC_ID')
             ->where('SOLIC.ID', '=', $id)
-            ->select('SOLIC.ID AS ID', 'SOLIC.created_at AS DATA_ABERTURA', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'STATUS.DESCRICAO')
+            ->select('SOLIC.ID AS ID', 'SOLIC.OBSERVACAO', 'SOLIC.created_at AS DATA_ABERTURA', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'SOLIC.OPCAOCONTATO_ID' , 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'ALU.CURSO', 'ALU.NASCIMENTO', 'STATUS.DESCRICAO AS STATUS')
             ->get();
             return response()->json($chamado);
     }
@@ -82,18 +65,13 @@ class ChamadoController extends Controller
         endif;
     }
     public function update($id, Request $request){
-        $chamado = Chamado::findOrFail($id);
-        $chamado->update($request->all());
+        $chamadoUpdate = DB::table('solicitacao')
+            ->where('id', $id)
+            ->update($request->all());
 
-        return response()->json($chamado, 200);
-    }
-    public function getCursosGraduacao(){
-        $curso = DB::connection('RM')->select("SELECT * FROM VW_LISTA_CURSO_GRAD");
-        return response()->json($curso);
-    }
-    public function getCursosPosGraduacao(){
-        $curso = DB::connection('RM')->select("SELECT * FROM VW_LISTA_CURSO_POS");
-        return response()->json($curso);
+        if($chamadoUpdate):
+            return response()->json($chamadoUpdate, 200);
+        endif;
     }
     public function getAluno(Request $request){
         $cpfAluno = $request->cpf;

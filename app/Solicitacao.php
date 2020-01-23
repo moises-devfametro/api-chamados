@@ -16,24 +16,24 @@ class Solicitacao extends Model
      *
      * @var array
      */
-    protected $table = 'solicitacao';
-    public $timestamps = true;
+    protected $table = 'SOLICITACAO';
+    // public $timestamps = true;
 
     protected $fillable = [
         'OBSERVACAO', 'ALUNO_ID', 'CONTATO', 'OPCAO_WIFI', 'OPCAO_EMAIL', 'OPCAO_PORTAL', 'OPCAOCONTATO_ID', 'STATUSSOLIC_ID', 'RESPONSAVEL_TECNICO', 'ATRIBUIDOCHAMADO', 'ENCERRAMENTOCHAMADO'
     ];
 
-    public function status(){
-        return $this->hasOne(StatusSolicitacao::class, 'ID', 'STATUSSOLIC_ID');
-    }
+    // public function status(){
+    //     return $this->hasOne(StatusSolicitacao::class, 'ID', 'STATUSSOLIC_ID');
+    // }
 
-    public function contato(){
-        return $this->hasOne(OpcaoContato::class, 'ID', 'OPCAOCONTATO_ID');
-    }
+    // public function contato(){
+    //     return $this->hasOne(OpcaoContato::class, 'ID', 'OPCAOCONTATO_ID');
+    // }
 
-    public function aluno_rm(){
-        return $this->hasOne(Alunos_rm::class, 'ID', 'ALUNO_ID');
-    }
+    // public function aluno_rm(){
+    //     return $this->hasOne(Alunos_rm::class, 'ID', 'ALUNO_ID');
+    // }
     // /**
     //  * The attributes excluded from the model's JSON form.
     //  *

@@ -16,23 +16,15 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/'], function () use ($router) {
-    $router->get('chamados/aberto', 'ChamadoController@getAllAberto');
-
     $router->get('chamados/aberto/hoje', 'ChamadoController@getAllAbertoHoje');
 
-    $router->get('chamados/pendente', 'ChamadoController@getAllPendente');
-
-    $router->get('chamados/concluido/hoje', 'ChamadoController@getAllConcluidoHoje');
+    $router->get('chamado/', 'ChamadoController@getChamadoStatus');
 
     $router->get('chamado/{id}', 'ChamadoController@get');
 
-    $router->get('cursos/graduacao', 'ChamadoController@getCursosGraduacao');
-
-    $router->get('cursos/posgraduacao', 'ChamadoController@getCursosPosGraduacao');
-
     $router->post('aluno', 'ChamadoController@getAluno');
 
-    $router->post('solicitacao/criar', 'ChamadoController@store');
+    $router->post('chamado/criar', 'ChamadoController@store');
 
-    $router->put('chamado/atualizar/{id}', 'ChamadoController@update');
+    $router->patch('chamado/atualizar/{id}', 'ChamadoController@update');
 });
