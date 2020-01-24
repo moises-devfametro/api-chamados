@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Solicitacao;
 use App\Alunos_rm;
+use App\RespostaSolicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +40,7 @@ class ChamadoController extends Controller
             ->join('ALUNOS_RM AS ALU', 'ALU.ID', '=', 'SOLIC.ALUNO_ID')
             ->join('STATUSSOLIC AS STATUS', 'STATUS.ID', '=', 'SOLIC.STATUSSOLIC_ID')
             ->where('SOLIC.ID', '=', $id)
-            ->select('SOLIC.ID AS ID', 'SOLIC.OBSERVACAO', 'SOLIC.created_at AS DATA_ABERTURA', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'SOLIC.OPCAOCONTATO_ID' , 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'ALU.CURSO', 'ALU.NASCIMENTO', 'STATUS.DESCRICAO AS STATUS')
+            ->select('SOLIC.ID AS ID', 'SOLIC.OBSERVACAO', 'SOLIC.created_at AS DATA_ABERTURA', 'SOLIC.ATRIBUIDOCHAMADO', 'ALU.CPF', 'SOLIC.OPCAO_WIFI', 'SOLIC.OPCAO_EMAIL', 'SOLIC.OPCAO_PORTAL', 'SOLIC.CONTATO', 'SOLIC.OPCAOCONTATO_ID' , 'ALU.ALUNO', 'SOLIC.RESPONSAVEL_TECNICO', 'ALU.CURSO', 'ALU.NASCIMENTO', 'STATUS.DESCRICAO AS STATUS')
             ->get();
             return response()->json($chamado);
     }
@@ -105,7 +106,35 @@ class ChamadoController extends Controller
         else:
             return response()->json($users, 200);
         endif;
+    }
 
+    public function SendEmail(Request $request, $id){
+        // Inseri na tabela resposta_solicitacao a resposta da solicitação com os necessários
+        $DadosSolicitacao = new RespostaSolicitacao;
+        $DadosSolicitacao->DESCRICAO = $request->msgEmail;
+        $DadosSolicitacao->SOLICITACAO_ID = $id;
+        $DadosSolicitacao->TECNICO_RESPONSAVEL = $request->nomeAluno;
+        $DadosSolicitacao->save();
+
+        // Depois de savo é enviado para o aluno a confirmação do chamado
+        if($DadosSolicitacao->save()):
+            $emailAluno = $request->emailAluno;
+            $nomeAluno = $request->nomeAluno;
+
+            $dadosMail = [
+                'id' => $id,
+                'NomeAluno' => $request->nomeAluno,
+                'msg' => $request->msgEmail
+            ];
+            Mail::send('emails.respostaSolicitacao', $dadosMail, function ($message) use ($emailAluno, $nomeAluno) {
+                $message->to($emailAluno, $nomeAluno);
+                $message->from('sistemas@unifametro.edu.br','Unifametro');
+                $message->subject('Resposta da sua solicitação.');
+            });
+        else:
+            return response('Não foi possivel inserir');
+        endif;
 
     }
+
 }

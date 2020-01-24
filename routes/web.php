@@ -27,4 +27,7 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
     $router->post('chamado/criar', 'ChamadoController@store');
 
     $router->patch('chamado/atualizar/{id}', 'ChamadoController@update');
+
+    $router->post('enviaremail/resposta/{id}', 'ChamadoController@SendEmail');
+
 });
